@@ -97,7 +97,7 @@ function getWebpackConfig(production, gtag) {
             static: {
                 directory: path.join(__dirname, 'public'),  // Adjust this path to your static files directory
             },
-            port: 9000,  // You can specify the port here
+            port: process.env.PORT || 9000,  // You can specify the port here
             open: true,  // Automatically open the browser when the server starts
             hot: true    // Enable hot module replacement            port: 9000
         },
