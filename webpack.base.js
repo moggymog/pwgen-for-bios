@@ -93,7 +93,7 @@ function getWebpackConfig(production, gtag) {
     return {
         entry: "./src/ui.ts",
         output: {
-            filename: "assets/bundle.[hash].js",
+            filename: production ? 'assets/bundle.js' : 'assets/bundle.[hash].js',
             path: path.join(__dirname, "dist")
         },
         plugins: plugins,
