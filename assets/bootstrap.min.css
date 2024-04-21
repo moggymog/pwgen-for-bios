@@ -362,3 +362,6 @@ button.btn::-moz-focus-inner,input[type=submit].btn::-moz-focus-inner{padding:0;
 #serial_id {width:240px;}
 #result_id {padding-left: 270px;}
 body { padding-top: 60px; }
+#barcode {
+    margin-top: 10px;
+}

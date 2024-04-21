@@ -9,6 +9,7 @@
         <link rel="icon" type="image/x-ico" href="favicon.ico">
         <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="192x192" href="assets/images/bios-pw-192.png">
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         <style>
             input#serial_id, div#answer { font-family: monospace }
         </style>
@@ -33,7 +34,7 @@
             </div>
             <div class="row" >
             <div id="control_id" >
-                <h2>Enter your code</h2><br/>
+                <h2>Enter your code BELOW:</h2><br/>
                 <form name="pwgen" id="form_id">
                     <input autocomplete="off" placeholder="Code" type="text" id="serial_id" />
                     <br/><br/>
@@ -43,6 +44,7 @@
                 <div id="result_id">
                 <h3 style="display: none;" id="try_this"><br/>Try one of the following codes:</h3>
                 <div id="answer"></div>
+                <canvas id="barcode"></canvas>
 				<span class="label notice" style="display: none;" id="dell_note">* for some Dell codes press Ctrl-Enter, not Enter, when entering code into the BIOS</span><br/><br/>
                 </div>
             </div>
@@ -65,5 +67,34 @@
             <footer style="text-align: center;">
             </footer>
         </div>
-    </body>
+        <script>
+            // Function to check for changes in the answer table and generate a barcode
+            function updateBarcode() {
+                var table = document.querySelector('.answer_table'); // Locate the table by its class
+                if (table) {
+                    var rows = table.rows; // Get all rows in the table
+                    var lastRow = rows[rows.length - 1]; // Assume password is in the last row
+                    var passwordCell = lastRow.cells[1]; // Password is in the second cell of the row
+                    if (passwordCell && passwordCell.textContent) {
+                        JsBarcode("#barcode", passwordCell.textContent.trim(), {format: "CODE128"});
+                    }
+                }
+            }
+    
+            // MutationObserver to trigger barcode update when the answer table updates
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        updateBarcode(); // Call updateBarcode whenever new nodes are added to the 'answer' div
+                    }
+                });
+            });
+    
+            // Start observing the 'answer' div for changes
+            observer.observe(document.getElementById('answer'), {
+                childList: true,
+                subtree: true
+            });
+        </script>
+            </body>
 </html>
