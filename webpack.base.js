@@ -10,35 +10,46 @@ const fs = require('fs');
 
 class VersionInfoPlugin {
     constructor(options = {}) {
-        if (options.filename == void 0) {
+        if (options.filename === undefined) {
             throw new Error('[VersionInfoPlugin] filename should be set');
         }
         this.options = options;
     }
 
     apply(compiler) {
-        const plugin = { name: 'VersionInfoPlugin' }
+        const plugin = { name: 'VersionInfoPlugin' };
         compiler.hooks.afterEmit.tapAsync(plugin, (compilation, callback) => {
-            exec('git describe --tags --always', (error, stdout, stderr) => {
-                if (error) {
-                    compilation.errors.push(error);
+            const gitDir = path.join(compiler.context, '.git');
+
+            fs.access(gitDir, fs.constants.F_OK, (dirErr) => {
+                if (dirErr) {
+                    console.error('Not a git repository or git not installed.');
                     callback();
                     return;
                 }
 
-                var version_info = `version: ${stdout.trim()}\ntime: ${new Date().toISOString()}\n`;
-                if (process.env.TRAVIS) {
-                    version_info += `build id: TRAVIS ${process.env.TRAVIS_JOB_NUMBER} (${process.env.TRAVIS_BUILD_ID})\n`;
-                }
-
-                const filename = path.join(compiler.options.output.path, this.options.filename);
-
-                fs.writeFile(filename, version_info, (err) => {
-                    if (err) {
-                        compilation.errors.push(err);
+                exec('git describe --tags --always', (execError, stdout, stderr) => {
+                    if (execError) {
+                        console.error('Error executing Git command:', stderr);
+                        compilation.errors.push(new Error('Failed to execute git describe --tags --always: ' + stderr));
+                        callback();
+                        return;
                     }
-                    callback();
-                })
+
+                    const version_info = `version: ${stdout.trim()}\ntime: ${new Date().toISOString()}\n`;
+                    if (process.env.TRAVIS) {
+                        version_info += `build id: TRAVIS ${process.env.TRAVIS_JOB_NUMBER} (${process.env.TRAVIS_BUILD_ID})\n`;
+                    }
+
+                    const filename = path.join(compiler.options.output.path, this.options.filename);
+
+                    fs.writeFile(filename, version_info, (err) => {
+                        if (err) {
+                            compilation.errors.push(err);
+                        }
+                        callback();
+                    });
+                });
             });
         });
     }
