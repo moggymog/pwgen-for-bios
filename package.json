@@ -5,7 +5,8 @@
   "main": "src/ui.ts",
   "browserslist": "> 0.25%, not dead",
   "dependencies": {
-    "jsbi": "^4.3.0"
+    "jsbi": "^4.3.0",
+    "serve": "^14.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
@@ -51,6 +52,7 @@
     "build-prod": "PRODUCTION=1 GOOGLE_ANALYTICS_TAG=UA-112154345-1 webpack",
     "build-stage": "PRODUCTION=1 GOOGLE_ANALYTICS_TAG=UA-112154345-2 webpack",
     "build": "webpack --mode production",
+    "start": "serve -s html -l $PORT",
     "heroku-postbuild": "npm run build",
     "webpack": "webpack",
     "dev-server": "webpack-dev-server"
