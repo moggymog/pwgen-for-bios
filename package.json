@@ -50,6 +50,8 @@
     "all": "npm test && npm run lint && npm run browser-test",
     "build-prod": "PRODUCTION=1 GOOGLE_ANALYTICS_TAG=UA-112154345-1 webpack",
     "build-stage": "PRODUCTION=1 GOOGLE_ANALYTICS_TAG=UA-112154345-2 webpack",
+    "build": "webpack --mode production",
+    "heroku-postbuild": "npm run build",
     "webpack": "webpack",
     "dev-server": "webpack-dev-server"
   },
